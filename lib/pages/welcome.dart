@@ -13,7 +13,7 @@ class _WelcomeState extends State<Welcome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.cyan[100],
+      backgroundColor: Colors.cyan[50],
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -33,33 +33,38 @@ class _WelcomeState extends State<Welcome> {
                 ),
                 //SizedBox(height: 20.0),
                 Expanded(child: welcomeSVG),
-                //SizedBox(height: 10.0),
-                Container(
-                  child: Text(
-                    'Track your students\' engagement during class',
-                    style: TextStyle(
-                      fontSize: 22.0,
-                      fontFamily: 'fonts/Poppins-Regular',
-                    ),
-                    textAlign: TextAlign.center,
+                SizedBox(height: 10.0),
+                Text(
+                  'Track your students\' engagement during class',
+                  style: TextStyle(
+                    fontSize: 22.0,
+                    fontFamily: 'fonts/Poppins-Regular',
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 //SizedBox(height: 20.0),
-                Container(
-                  color: Colors.cyan[900],
-                  child: TextButton(
-                    onPressed: () {
-                      print("I was pressed!");
-                    },
-                    child: Text(
-                      'Let\'s Go!',
-                      style: TextStyle(
-                        fontSize: 28.0,
-                        color: Colors.white,
-                        fontFamily: 'fonts/Poppins-Medium',
-                        letterSpacing: 2.0,
-                      ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/home');
+                  },
+                  child: Text(
+                    'Let\'s Go!',
+                    style: TextStyle(
+                      fontSize: 28.0,
+                      color: Colors.white,
+                      fontFamily: 'fonts/Poppins-Medium',
+                      letterSpacing: 2.0,
                     ),
+                  ),
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                          side: BorderSide(color: Colors.teal),
+                        )
+                    )
                   ),
                 ),
               ],
