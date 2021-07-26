@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_class_api_consumer/services/student_report.dart';
 
 class MetricReports extends StatefulWidget {
   const MetricReports({Key? key}) : super(key: key);
@@ -8,6 +9,9 @@ class MetricReports extends StatefulWidget {
 }
 
 class _MetricReportsState extends State<MetricReports> {
+  final TextEditingController _controller = TextEditingController();
+  Future<Album>? _futureAlbum;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +32,47 @@ class _MetricReportsState extends State<MetricReports> {
         ),
         centerTitle: true,
       ),
-      body: Text("Screen for reports"),
+      body: Container(
+        alignment: Alignment.center,
+        padding: EdgeInsets.all(8.0),
+        child: (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
+      )
     );
   }
+
+  Column buildColumn() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        TextField(
+          controller: _controller,
+          decoration: const InputDecoration(hintText: 'Enter Title'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _futureAlbum = createAlbum(_controller.text);
+            });
+          },
+          child: const Text('Create Data'),
+        )
+      ],
+    );
+  }
+
+  FutureBuilder<Album> buildFutureBuilder() {
+    return FutureBuilder<Album>(
+      future: _futureAlbum,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Text(snapshot.data!.title);
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+
+        return const CircularProgressIndicator();
+      },
+    );
+  }
+
 }
