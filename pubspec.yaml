@@ -33,6 +33,7 @@ dependencies:
   flutter_fadein: ^2.0.0
   image_picker: ^0.8.2
   http: ^0.13.3
+  syncfusion_flutter_charts: ^19.2.49
 
 dev_dependencies:
   flutter_test:

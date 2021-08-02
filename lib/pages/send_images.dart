@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:image_picker/image_picker.dart';
-//import 'package:smart_class_api_consumer/services/student_report.dart';
+import 'package:smart_class_api_consumer/services/student_report.dart';
 
 class SendImages extends StatefulWidget {
   const SendImages({Key? key}) : super(key: key);
@@ -15,13 +15,16 @@ class SendImages extends StatefulWidget {
 class _SendImagesState extends State<SendImages> {
 
   late XFile imageFile;
+  late List <XFile?> images = [];
   final ImagePicker _picker = ImagePicker();
   List <String> imagePaths = [];
   //Future<Album>? _futureAlbum;
 
   void chooseImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
+
     setState(() {
+      images.add(pickedFile);
       imageFile = pickedFile!;
       imagePaths.add(imageFile.path);
     });
@@ -131,13 +134,17 @@ class _SendImagesState extends State<SendImages> {
               ),
               SizedBox(width: 20),
               TextButton.icon(
-                onPressed: () {
-                  setState(() {
-                    //_futureAlbum = createAlbum('My Test');
-                    print('Album title sent');
-                    //print(_futureAlbum);
-                    //Navigator.pushReplacementNamed(context, '/reports', arguments: _futureAlbum);
-                  });
+                onPressed: () async {
+                  for (var image in images)
+                    {
+                      final uploadResult = await uploadImage(image);
+                      setState(() {
+                        //_futureAlbum = createAlbum('My Test');
+                        print(uploadResult);
+                        //print(_futureAlbum);
+                        //Navigator.pushReplacementNamed(context, '/reports', arguments: _futureAlbum);
+                      });
+                    }
                 },
                 icon: Icon(
                   Icons.send,
