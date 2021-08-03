@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_class_api_consumer/services/student_report.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class MetricReports extends StatefulWidget {
   const MetricReports({Key? key}) : super(key: key);
@@ -9,8 +10,14 @@ class MetricReports extends StatefulWidget {
 }
 
 class _MetricReportsState extends State<MetricReports> {
-  final TextEditingController _controller = TextEditingController();
-  Future<Album>? _futureAlbum;
+  late Map<dynamic, dynamic> _chartData = {};
+  late List<EngagementData> _testChartData = [];
+  final StudentReport _studentReport = StudentReport();
+  late TooltipBehavior _tooltipBehavior;
+
+  void setupReport() async {
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +29,7 @@ class _MetricReportsState extends State<MetricReports> {
           color: Colors.black,
         ),
         title: Text(
-          'Metric Reports',
+          'Metric Report',
           style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 20,
@@ -35,7 +42,7 @@ class _MetricReportsState extends State<MetricReports> {
       body: Container(
         alignment: Alignment.center,
         padding: EdgeInsets.all(8.0),
-        child: (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
+        child: (_chartData.isEmpty) ? buildColumn() : buildChart(),
       )
     );
   }
@@ -44,35 +51,94 @@ class _MetricReportsState extends State<MetricReports> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        TextField(
-          controller: _controller,
-          decoration: const InputDecoration(hintText: 'Enter Title'),
-        ),
         ElevatedButton(
-          onPressed: () {
-            setState(() {
-              _futureAlbum = createAlbum(_controller.text);
-            });
+          onPressed: () async {
+            await _studentReport.getReport();
+            if (_studentReport.error == ""){
+              setState(() {
+                _chartData = createChartData(_studentReport);
+                _testChartData = makeListOutOfData(_chartData);
+                _tooltipBehavior = TooltipBehavior(enable: true);
+                print("Report fetch successful");
+              });
+            } else {
+              final snackBar = SnackBar(
+                content: Text("Failed to fetch report!"),
+                action: SnackBarAction(
+                  label: 'Undo',
+                  onPressed: (){},
+                ),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
           },
-          child: const Text('Create Data'),
+          child: const Text('Fetch Data', style: TextStyle(fontSize: 28),),
         )
       ],
     );
   }
 
-  FutureBuilder<Album> buildFutureBuilder() {
-    return FutureBuilder<Album>(
-      future: _futureAlbum,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Text(snapshot.data!.title);
-        } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
-        }
-
-        return const CircularProgressIndicator();
-      },
+  SfCircularChart buildChart() {
+    return SfCircularChart(
+      title: ChartTitle(text: "Engagement Report from Sent Images"),
+      legend: Legend(
+        isVisible: true,
+        overflowMode: LegendItemOverflowMode.wrap,
+      ),
+      tooltipBehavior: _tooltipBehavior,
+      series: <CircularSeries>[
+        RadialBarSeries<EngagementData, String>(
+          dataSource: _testChartData,
+          xValueMapper: (EngagementData data,_) => data.classification.capitalize(),
+          yValueMapper: (EngagementData data,_) => data.amount,
+          dataLabelSettings: DataLabelSettings(isVisible: true,),
+          enableTooltip: true,
+          maximumValue: 100,
+          gap: '10%',
+          legendIconType: LegendIconType.diamond,
+          cornerStyle: CornerStyle.bothCurve,
+        )
+      ],
+      annotations: <CircularChartAnnotation>[
+        CircularChartAnnotation(
+          angle: 0,
+          radius: '0%',
+          height: '90%',
+          width: '90%',
+          widget: Container(
+            child: iconSelector(_studentReport),
+          )
+        )
+      ],
     );
+  }
+
+  Icon iconSelector(StudentReport report){
+    if (report.attentiveScore > 70){
+      // If the engagement score has the student attentive for 70% of the class
+      return Icon(
+        Icons.sentiment_satisfied_alt_rounded,
+        color: Colors.teal,
+        size: 90.0,
+        semanticLabel: 'Keep up the good work',
+      );
+    } else if (report.attentiveScore <= 70 && report.attentiveScore > 50) {
+      // If the engagement score has the student being attentive for 50 to 70% of the time
+      return Icon(
+        Icons.sentiment_neutral,
+        color: Colors.grey,
+        size: 90.0,
+        semanticLabel: "Don't fall behind your classmates",
+      );
+    } else {
+      // Otherwise if they are below 50 in the attentive score then they might have a problem
+      return Icon(
+        Icons.sentiment_dissatisfied_rounded,
+        color: Colors.red,
+        size: 90.0,
+        semanticLabel: "If you're having any trouble with following the class, please write to the Professor.",
+      );
+    }
   }
 
 }
