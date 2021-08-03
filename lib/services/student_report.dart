@@ -1,8 +1,9 @@
-//import 'dart:convert';
-//import 'package:async/async.dart';
+import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 
+// This class helps us when developing the chartData list for the chart visualization of results
 class EngagementData {
   final String classification;
   final double amount;
@@ -20,60 +21,48 @@ List<EngagementData> makeListOutOfData(Map<dynamic, dynamic> report){
   return eData;
 }
 
+// This class helps us store the classification results from the server
 class StudentReport {
-  final double attentiveScore;
-  final double sleepingScore;
-  final double inattentiveScore;
-  // String error = "";
+  late double attentiveScore;
+  late double sleepingScore;
+  late double inattentiveScore;
+  String error = "";
 
-  StudentReport({
-    required this.attentiveScore,
-    required this.sleepingScore,
-    required this.inattentiveScore,
-});
+  StudentReport();
 
-  // Future<void> getReport() async {
-  //
-  //   try {
-  //     // Make the request
-  //     http.Response response = await http.get(Uri.parse('http://10.0.2.2:5000/reports'));
-  //     Map data = jsonDecode(response.body);
-  //
-  //     // Get properties from data
-  //     double attScore = data['attentive'];
-  //     double nAttScore = data['inattentive'];
-  //     double slpScore = data['sleeping'];
-  //     double total = attScore + nAttScore + slpScore;
-  //
-  //     // Perform necessary calculations and set our properties
-  //     attentiveScore = (attScore / total) * 100;
-  //     inattentiveScore = (nAttScore / total) * 100;
-  //     sleepingScore = (slpScore / total) * 100;
-  //   }
-  //   catch (e) {
-  //     print("Caught error: $e");
-  //     error = 'Failed to retrieve data';
-  //   }
-  //
-  // }
-  //
-  // factory StudentReport.fromJson(Map<String, dynamic> json) {
-  //   double attScore = json['attentive'];
-  //   double nAttScore = json['inattentive'];
-  //   double slpScore = json['sleeping'];
-  //   double total = attScore + nAttScore + slpScore;
-  //
-  //   // Get the percentage
-  //   attScore = (attScore / total) * 100;
-  //   nAttScore = (nAttScore / total) * 100;
-  //   slpScore = (slpScore / total) * 100;
-  //   return StudentReport(
-  //       attentiveScore: attScore,
-  //       inattentiveScore: nAttScore,
-  //       sleepingScore: slpScore,
-  //   );
-  // }
+  Future<void> getReport() async {
 
+    try {
+      // Make the request
+      http.Response response = await http.get(Uri.parse('http://10.0.2.2:5000/report'));
+      Map data = jsonDecode(response.body);
+      print(data);
+
+      // Get properties from data
+      double attScore = data['attentive'].toDouble();
+      double nAttScore = data['inattentive'].toDouble();
+      double slpScore = data['sleeping'].toDouble();
+      double total = attScore + nAttScore + slpScore;
+      print(total);
+
+      // Perform necessary calculations and set our properties
+      attentiveScore = roundDouble(((attScore / total) * 100.0), 2);
+      inattentiveScore = roundDouble(((nAttScore / total) * 100.0), 2);
+      sleepingScore = roundDouble(((slpScore / total) * 100.0), 2);
+      error = ""; // Ensure error is returned to empty string so the if clause check passes when we try again
+    }
+    catch (e) {
+      print("Caught error: $e");
+      error = 'Failed to retrieve data';
+    }
+
+  }
+
+}
+
+double roundDouble(double value, int places){
+  num mod = pow(10.0, places);
+  return ((value * mod).round().toDouble() / mod);
 }
 
 // Future <StudentReport>? fetchReport() async {
@@ -124,4 +113,10 @@ Future<String?> uploadImage(filename) async {
   //   // then throw an exception.
   //   throw Exception('Failed to create album.');
   // }
+}
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";
+  }
 }

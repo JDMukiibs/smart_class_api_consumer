@@ -12,9 +12,12 @@ class MetricReports extends StatefulWidget {
 class _MetricReportsState extends State<MetricReports> {
   late Map<dynamic, dynamic> _chartData = {};
   late List<EngagementData> _testChartData = [];
-  late StudentReport _studentReport;
+  final StudentReport _studentReport = StudentReport();
   late TooltipBehavior _tooltipBehavior;
-  // Future<StudentReport>? _futureStudentReport;
+
+  void setupReport() async {
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,7 @@ class _MetricReportsState extends State<MetricReports> {
           color: Colors.black,
         ),
         title: Text(
-          'Metric Reports',
+          'Metric Report',
           style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 20,
@@ -49,14 +52,25 @@ class _MetricReportsState extends State<MetricReports> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         ElevatedButton(
-          onPressed: () {
-            setState(() {
-              _studentReport = StudentReport(attentiveScore: 27.5, sleepingScore: 30.2, inattentiveScore: 42.3);
-              _chartData = createChartData(_studentReport);
-              _testChartData = makeListOutOfData(_chartData);
-              _tooltipBehavior = TooltipBehavior(enable: true);
-              print("test");
-            });
+          onPressed: () async {
+            await _studentReport.getReport();
+            if (_studentReport.error == ""){
+              setState(() {
+                _chartData = createChartData(_studentReport);
+                _testChartData = makeListOutOfData(_chartData);
+                _tooltipBehavior = TooltipBehavior(enable: true);
+                print("Report fetch successful");
+              });
+            } else {
+              final snackBar = SnackBar(
+                content: Text("Failed to fetch report!"),
+                action: SnackBarAction(
+                  label: 'Undo',
+                  onPressed: (){},
+                ),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
           },
           child: const Text('Fetch Data', style: TextStyle(fontSize: 28),),
         )
@@ -75,11 +89,14 @@ class _MetricReportsState extends State<MetricReports> {
       series: <CircularSeries>[
         RadialBarSeries<EngagementData, String>(
           dataSource: _testChartData,
-          xValueMapper: (EngagementData data,_) => data.classification,
+          xValueMapper: (EngagementData data,_) => data.classification.capitalize(),
           yValueMapper: (EngagementData data,_) => data.amount,
           dataLabelSettings: DataLabelSettings(isVisible: true,),
           enableTooltip: true,
           maximumValue: 100,
+          gap: '10%',
+          legendIconType: LegendIconType.diamond,
+          cornerStyle: CornerStyle.bothCurve,
         )
       ],
       annotations: <CircularChartAnnotation>[
