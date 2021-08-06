@@ -17,8 +17,9 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.cyan[50],
       body: SafeArea(
         child: CustomPaint(
-          painter: CurvePainter(),
+          painter: CirclePainter(),
           child: Container(
+            height: (MediaQuery.of(context).size.height-20),
             child: Column(
               children: <Widget>[
                 Padding(
@@ -42,7 +43,7 @@ class _HomeState extends State<Home> {
                     },
                     child: Container(
                       padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
-                      height: 127,
+                      height: (MediaQuery.of(context).size.height-200)/5,
                       decoration: BoxDecoration(
                         color: Colors.teal[100],
                         borderRadius: BorderRadius.all(Radius.circular(20))
@@ -74,7 +75,7 @@ class _HomeState extends State<Home> {
                     },
                     child: Container(
                       padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
-                      height: 127,
+                      height: (MediaQuery.of(context).size.height-200)/5,
                       decoration: BoxDecoration(
                           color: Colors.teal[100],
                           borderRadius: BorderRadius.all(Radius.circular(20))

@@ -17,14 +17,14 @@ class _WelcomeState extends State<Welcome> {
       backgroundColor: Colors.cyan[50],
       body: SafeArea(
         child: CustomPaint(
-          painter: CurvePainter(),
+          painter: CirclePainter(),
           child: Center(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 50, 20, 90),
               child: Column(
                 children: <Widget>[
                   Container(
-                    height: 35,
+                    height: (MediaQuery.of(context).size.height-200)/5,
                     child: Text(
                       'Smart Class',
                       style: TextStyle(
@@ -36,7 +36,7 @@ class _WelcomeState extends State<Welcome> {
                   ),
                   //SizedBox(height: 20.0),
                   Expanded(child: welcomeSVG),
-                  SizedBox(height: 10.0),
+                  SizedBox(height: 50.0),
                   Container(
                     alignment: Alignment.center,
                     child: Text(
@@ -48,7 +48,7 @@ class _WelcomeState extends State<Welcome> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  //SizedBox(height: 20.0),
+                  SizedBox(height: 50.0),
                   TextButton(
                     onPressed: () {
                       Navigator.pushReplacementNamed(context, '/home');
