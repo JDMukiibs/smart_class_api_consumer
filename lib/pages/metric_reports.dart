@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_class_api_consumer/services/student_report.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -14,10 +15,6 @@ class _MetricReportsState extends State<MetricReports> {
   late List<EngagementData> _testChartData = [];
   final StudentReport _studentReport = StudentReport();
   late TooltipBehavior _tooltipBehavior;
-
-  void setupReport() async {
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +49,25 @@ class _MetricReportsState extends State<MetricReports> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+                side: BorderSide(color: Colors.teal),
+              )
+            )
+          ),
           onPressed: () async {
             await _studentReport.getReport();
             if (_studentReport.error == ""){
+              // obtain shared preferences to help us store the fetched data
+              final prefs = await SharedPreferences.getInstance();
+
+              // Set values
+              prefs.setDouble("attentive", _studentReport.attentiveScore);
+              prefs.setDouble("inattentive", _studentReport.inattentiveScore);
+              prefs.setDouble("sleeping", _studentReport.sleepingScore);
               setState(() {
                 _chartData = createChartData(_studentReport);
                 _testChartData = makeListOutOfData(_chartData);
@@ -65,7 +78,7 @@ class _MetricReportsState extends State<MetricReports> {
               final snackBar = SnackBar(
                 content: Text("Failed to fetch report!"),
                 action: SnackBarAction(
-                  label: 'Undo',
+                  label: 'Retry',
                   onPressed: (){},
                 ),
               );

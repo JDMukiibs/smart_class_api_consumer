@@ -28,7 +28,11 @@ class StudentReport {
   late double inattentiveScore;
   String error = "";
 
-  StudentReport();
+  StudentReport(){
+    this.attentiveScore = 0.0;
+    this.sleepingScore = 0.0;
+    this.inattentiveScore = 0.0;
+  }
 
   Future<void> getReport() async {
 
@@ -56,6 +60,15 @@ class StudentReport {
       error = 'Failed to retrieve data';
     }
 
+  }
+
+  // This function helps us in the Home screen to determine if we were able to get any data from prefs
+  // where prefs will have stored data from our last fetch request onto the phone.
+  bool checkReportStatus() {
+    if (attentiveScore == 0.0 && inattentiveScore == 0.0 && sleepingScore == 0.0)
+      return true;
+    else
+      return false;
   }
 
 }

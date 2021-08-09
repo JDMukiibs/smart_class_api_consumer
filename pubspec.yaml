@@ -34,6 +34,7 @@ dependencies:
   image_picker: ^0.8.2
   http: ^0.13.3
   syncfusion_flutter_charts: ^19.2.49
+  shared_preferences: ^2.0.6
 
 dev_dependencies:
   flutter_test:
