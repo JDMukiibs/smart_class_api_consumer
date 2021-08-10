@@ -135,16 +135,40 @@ class _SendImagesState extends State<SendImages> {
               SizedBox(width: 20),
               TextButton.icon(
                 onPressed: () async {
-                  for (var image in images)
+                  if (images.length == 0){
+                    final snackBar = SnackBar(
+                      content: Text("No uploaded images!"),
+                      action: SnackBarAction(
+                        label: "Upload",
+                        onPressed: (){},
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  } else {
+                    for (var image in images)
                     {
-                      final uploadResult = await uploadImage(image);
-                      setState(() {
-                        //_futureAlbum = createAlbum('My Test');
-                        print(uploadResult);
-                        //print(_futureAlbum);
-                        //Navigator.pushReplacementNamed(context, '/reports', arguments: _futureAlbum);
-                      });
+                      try
+                      {
+                        final uploadResult = await uploadImage(image);
+                        setState(() {
+                          print(uploadResult);
+                          //Navigator.pushReplacementNamed(context, '/reports', arguments: _futureAlbum);
+                        });
+                      }
+                      catch(e){
+                        print("Caught error: $e");
+                        final snackBar = SnackBar(
+                          content: Text("Failed to send images!"),
+                          action: SnackBarAction(
+                            label: 'Retry',
+                            onPressed: (){},
+                          ),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        break;
+                      }
                     }
+                  }
                 },
                 icon: Icon(
                   Icons.send,

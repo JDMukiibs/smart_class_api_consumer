@@ -78,18 +78,6 @@ double roundDouble(double value, int places){
   return ((value * mod).round().toDouble() / mod);
 }
 
-// Future <StudentReport>? fetchReport() async {
-//   final response = await http.get(Uri.parse('http://10.0.2.2:5000/reports'));
-//
-//   if (response.statusCode == 200) {
-//     // If the server returns a 200 OK response, then we parse the json
-//     return StudentReport.fromJson(jsonDecode(response.body));
-//   } else {
-//     // we throw an exception to let us know something went wrong.
-//     throw Exception("Failed to load report!");
-//   }
-// }
-
 Map<dynamic, dynamic> createChartData(StudentReport studentData){
   var details = new Map();
   details['attentive'] = studentData.attentiveScore;

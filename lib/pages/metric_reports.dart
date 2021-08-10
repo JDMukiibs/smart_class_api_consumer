@@ -94,6 +94,7 @@ class _MetricReportsState extends State<MetricReports> {
   SfCircularChart buildChart() {
     return SfCircularChart(
       title: ChartTitle(text: "Engagement Report from Sent Images"),
+      palette: <Color>[Colors.teal[900] as Color, Colors.teal, Colors.teal[200] as Color],
       legend: Legend(
         isVisible: true,
         overflowMode: LegendItemOverflowMode.wrap,

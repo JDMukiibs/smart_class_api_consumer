@@ -22,7 +22,6 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     _loadStoredData();
-    _tooltipBehavior = TooltipBehavior(enable: true);
     super.initState();
   }
 
@@ -31,6 +30,7 @@ class _HomeState extends State<Home> {
 
     setState(() {
       //read data stored with help of Shared Prefs. If it doesn't exist return 0.0
+      _tooltipBehavior = TooltipBehavior(enable: true);
       _studentReport.attentiveScore = prefs.getDouble('attentive') ?? 0.0;
       _studentReport.inattentiveScore = prefs.getDouble('inattentive') ?? 0.0;
       _studentReport.sleepingScore = prefs.getDouble('sleeping') ?? 0.0;
@@ -131,7 +131,7 @@ class _HomeState extends State<Home> {
                     padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
                     height: (MediaQuery.of(context).size.height - 220)/2,
                     decoration: BoxDecoration(
-                        color: Colors.teal[100],
+                        color: Colors.cyan[50],
                         borderRadius: BorderRadius.all(Radius.circular(20))
                     ),
                     child: Column(
@@ -163,12 +163,15 @@ class _HomeState extends State<Home> {
     _chartData = createChartData(_studentReport);
     _testChartData = makeListOutOfData(_chartData);
 
-    return SfCartesianChart(
-      palette: <Color>[Colors.teal[800] as Color],
+    return SfCircularChart(
+      palette: <Color>[Colors.teal[900] as Color, Colors.teal, Colors.teal[200] as Color],
+      legend: Legend(
+        isVisible: true,
+        overflowMode: LegendItemOverflowMode.wrap,
+      ),
       tooltipBehavior: _tooltipBehavior,
-      series: <ChartSeries>[
-        BarSeries<EngagementData, String>(
-          name: "Engagement Classification",
+      series: <CircularSeries>[
+        PieSeries<EngagementData, String>(
           dataSource: _testChartData,
           xValueMapper: (EngagementData data,_) => data.classification.capitalize(),
           yValueMapper: (EngagementData data,_) => data.amount,
@@ -176,11 +179,6 @@ class _HomeState extends State<Home> {
           enableTooltip: true,
         )
       ],
-      primaryXAxis: CategoryAxis(),
-      primaryYAxis: NumericAxis(
-        edgeLabelPlacement: EdgeLabelPlacement.shift,
-        title: AxisTitle(text: "Engagement Classification %age"),
-      ),
     );
   }
 }
