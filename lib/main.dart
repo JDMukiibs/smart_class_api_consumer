@@ -5,7 +5,8 @@ import 'package:smart_class_api_consumer/pages/send_images.dart';
 import 'package:smart_class_api_consumer/pages/welcome.dart';
 
 void main() => runApp(MaterialApp(
-  theme: ThemeData(fontFamily: 'Poppins'),
+  theme: ThemeData(fontFamily: 'Poppins', accentColor: Colors.teal),
+  debugShowCheckedModeBanner: false,
   initialRoute: '/',
   routes: {
     '/': (context) => Welcome(),

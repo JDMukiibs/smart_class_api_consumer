@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:smart_class_api_consumer/helper_widgets_and_functions/expandable_fab.dart';
 import 'package:smart_class_api_consumer/services/student_report.dart';
 
 class SendImages extends StatefulWidget {
@@ -18,7 +19,7 @@ class _SendImagesState extends State<SendImages> {
   late List <XFile?> images = [];
   final ImagePicker _picker = ImagePicker();
   List <String> imagePaths = [];
-  //Future<Album>? _futureAlbum;
+  static const _actionTitles = ['Upload Photo(s)', 'Take a Photo'];
 
   void chooseImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
@@ -28,6 +29,23 @@ class _SendImagesState extends State<SendImages> {
       imageFile = pickedFile!;
       imagePaths.add(imageFile.path);
     });
+  }
+
+  void _showAction(BuildContext context, int index) {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text(_actionTitles[index]),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('CLOSE'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Created my own grid building widget function to avoid overpopulating the main function with code.
@@ -195,6 +213,19 @@ class _SendImagesState extends State<SendImages> {
                 ),
               ),
             ],
+          )
+        ],
+      ),
+      floatingActionButton: ExpandableFab(
+        distance: 112.0,
+        children: [
+          ActionButton(
+            onPressed: () => _showAction(context, 0),
+            icon: const Icon(Icons.photo_library),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 1),
+            icon: const Icon(Icons.add_a_photo),
           )
         ],
       ),

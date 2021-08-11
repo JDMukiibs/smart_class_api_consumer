@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
@@ -38,7 +40,7 @@ class StudentReport {
 
     try {
       // Make the request
-      http.Response response = await http.get(Uri.parse('http://10.0.2.2:5000/report'));
+      http.Response response = await http.get(Uri.parse('http://10.0.2.2:5000/report')).timeout(const Duration(seconds: 3));
       Map data = jsonDecode(response.body);
       print(data);
 
@@ -55,9 +57,13 @@ class StudentReport {
       sleepingScore = roundDouble(((slpScore / total) * 100.0), 2);
       error = ""; // Ensure error is returned to empty string so the if clause check passes when we try again
     }
-    catch (e) {
+    on TimeoutException catch (e) {
       print("Caught error: $e");
-      error = 'Failed to retrieve data';
+      error = 'Timeout occurred.';
+    }
+    on SocketException catch (e) {
+      print("Caught error: $e");
+      error = 'Server unresponsive';
     }
 
   }
