@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:smart_class_api_consumer/helper_widgets_and_functions/expandable_fab.dart';
 import 'package:smart_class_api_consumer/services/student_report.dart';
 
 class SendImages extends StatefulWidget {
@@ -13,29 +14,73 @@ class SendImages extends StatefulWidget {
 }
 
 class _SendImagesState extends State<SendImages> {
+  List <XFile>? _imageFileList;
 
-  late XFile imageFile;
-  late List <XFile?> images = [];
+  set _imageFile(XFile? value) {
+    _imageFileList = value == null ? null : [value];
+  }
+
+  dynamic _pickImageError;
+
   final ImagePicker _picker = ImagePicker();
   List <String> imagePaths = [];
-  //Future<Album>? _futureAlbum;
+  //static const _actionTitles = ['Upload Photo(s)', 'Take a Photo'];
 
-  void chooseImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
-
-    setState(() {
-      images.add(pickedFile);
-      imageFile = pickedFile!;
-      imagePaths.add(imageFile.path);
-    });
+  void _onImageButtonPressed(ImageSource source, {bool isMultiImage = false}) async {
+    if(isMultiImage) {
+      try {
+        final pickedFileList = await _picker.pickMultiImage();
+        setState(() {
+          _imageFileList = pickedFileList;
+          for (var element in _imageFileList!) {
+            imagePaths.add(element.path);
+          }
+        });
+      } catch (e) {
+        setState(() {
+          _pickImageError = e;
+          print(_pickImageError);
+        });
+      }
+    } else {
+      try {
+        final pickedFile = await _picker.pickImage(source: source);
+        setState(() {
+          _imageFile = pickedFile;
+          imagePaths.add(pickedFile!.path);
+        });
+      } catch (e) {
+        setState(() {
+          _pickImageError = e;
+          print(_pickImageError);
+        });
+      }
+    }
   }
+
+  // void _showAction(BuildContext context, int index) {
+  //   showDialog<void>(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         content: Text(_actionTitles[index]),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () => Navigator.of(context).pop(),
+  //             child: const Text('CLOSE'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   // Created my own grid building widget function to avoid overpopulating the main function with code.
   Widget imageTemplate(images) {
     return GridView.builder(
       itemCount: images.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount: 4,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
@@ -100,77 +145,83 @@ class _SendImagesState extends State<SendImages> {
                 ),
             ),
           ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton.icon(
-                onPressed: () {
-                  chooseImage(ImageSource.gallery);
-                },
-                icon: Icon(
-                  Icons.upload_file,
-                  color: Colors.white,
-                ),
-                label: Text(
-                  'Add images',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 23,
-                    color: Colors.white,
+        ],
+      ),
+      floatingActionButton: ExpandableFab(
+        distance: 112.0,
+        children: [
+          ActionButton(
+            onPressed: () => _onImageButtonPressed(ImageSource.gallery, isMultiImage: true),
+            icon: const Icon(Icons.photo_library),
+          ),
+          ActionButton(
+            onPressed: () => _onImageButtonPressed(ImageSource.camera),
+            icon: const Icon(Icons.add_a_photo),
+          ),
+          ActionButton(
+            onPressed: () async {
+              if (imagePaths.length == 0){
+                final snackBar = SnackBar(
+                  content: Text("Add some images first!"),
+                  duration: Duration(seconds: 2, milliseconds: 500),
+                  action: SnackBarAction(
+                    label: "Close",
+                    onPressed: (){},
                   ),
-                ),
-                style: ButtonStyle(
-                    padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(5)),
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                          side: BorderSide(color: Colors.teal),
-                        )
-                    )
-                ),
-              ),
-              SizedBox(width: 20),
-              TextButton.icon(
-                onPressed: () async {
-                  for (var image in images)
-                    {
-                      final uploadResult = await uploadImage(image);
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              } else {
+                // Iterate through our images and upload each one and catch any errors that occur
+                var counter = 0;
+                for (var image in _imageFileList!)
+                {
+                  try
+                  {
+                    final uploadResult = await uploadImage(image);
+                    if (uploadResult == "CREATED") {
                       setState(() {
-                        //_futureAlbum = createAlbum('My Test');
+                        counter++;
                         print(uploadResult);
-                        //print(_futureAlbum);
-                        //Navigator.pushReplacementNamed(context, '/reports', arguments: _futureAlbum);
+                        final snackBar = SnackBar(
+                          content: Text("$counter out of ${imagePaths.length} sent!"),
+                          duration: Duration(seconds: 3, milliseconds: 500),
+                          action: SnackBarAction(
+                            label: 'Close',
+                            onPressed: (){},
+                          ),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       });
+                    }else {
+                      final snackBar = SnackBar(
+                        content: Text("Response: $uploadResult"),
+                        duration: Duration(seconds: 4, milliseconds: 500),
+                        action: SnackBarAction(
+                          label: 'Close',
+                          onPressed: (){},
+                        ),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }
-                },
-                icon: Icon(
-                  Icons.send,
-                  color: Colors.white,
-                ),
-                label: Text(
-                  'Send',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 23,
-                    color: Colors.white,
-                  ),
-                ),
-                style: ButtonStyle(
-                    padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(5)),
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                          side: BorderSide(color: Colors.teal),
-                        )
-                    )
-                ),
-              ),
-            ],
+                  }
+                  catch(e){
+                    // Catch any other errors regarding other types of exceptions
+                    print("Caught error: $e");
+                    final snackBar = SnackBar(
+                      content: Text("Failed to send images!"),
+                      duration: Duration(seconds: 2, milliseconds: 500),
+                      action: SnackBarAction(
+                        label: 'Close',
+                        onPressed: (){},
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    break; // If we catch any errors during any point of upload we break out
+                  }
+                }
+              }
+            },
+            icon: const Icon(Icons.upload),
           )
         ],
       ),

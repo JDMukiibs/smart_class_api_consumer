@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
@@ -28,13 +30,17 @@ class StudentReport {
   late double inattentiveScore;
   String error = "";
 
-  StudentReport();
+  StudentReport(){
+    this.attentiveScore = 0.0;
+    this.sleepingScore = 0.0;
+    this.inattentiveScore = 0.0;
+  }
 
   Future<void> getReport() async {
 
     try {
       // Make the request
-      http.Response response = await http.get(Uri.parse('http://10.0.2.2:5000/report'));
+      http.Response response = await http.get(Uri.parse('http://10.0.2.2:5000/report')).timeout(const Duration(seconds: 3));
       Map data = jsonDecode(response.body);
       print(data);
 
@@ -51,11 +57,24 @@ class StudentReport {
       sleepingScore = roundDouble(((slpScore / total) * 100.0), 2);
       error = ""; // Ensure error is returned to empty string so the if clause check passes when we try again
     }
-    catch (e) {
+    on TimeoutException catch (e) {
       print("Caught error: $e");
-      error = 'Failed to retrieve data';
+      error = 'Timeout occurred.';
+    }
+    on SocketException catch (e) {
+      print("Caught error: $e");
+      error = 'Server unresponsive';
     }
 
+  }
+
+  // This function helps us in the Home screen to determine if we were able to get any data from prefs
+  // where prefs will have stored data from our last fetch request onto the phone.
+  bool checkReportStatus() {
+    if (attentiveScore == 0.0 && inattentiveScore == 0.0 && sleepingScore == 0.0)
+      return true;
+    else
+      return false;
   }
 
 }
@@ -64,18 +83,6 @@ double roundDouble(double value, int places){
   num mod = pow(10.0, places);
   return ((value * mod).round().toDouble() / mod);
 }
-
-// Future <StudentReport>? fetchReport() async {
-//   final response = await http.get(Uri.parse('http://10.0.2.2:5000/reports'));
-//
-//   if (response.statusCode == 200) {
-//     // If the server returns a 200 OK response, then we parse the json
-//     return StudentReport.fromJson(jsonDecode(response.body));
-//   } else {
-//     // we throw an exception to let us know something went wrong.
-//     throw Exception("Failed to load report!");
-//   }
-// }
 
 Map<dynamic, dynamic> createChartData(StudentReport studentData){
   var details = new Map();
@@ -98,21 +105,12 @@ Future<String?> uploadImage(filename) async {
 
   var request = http.MultipartRequest('POST', uri);
   var multipartFile = new http.MultipartFile('picture', stream, length, filename: basename(filename.path));
+  print("Multipart file created.");
 
   request.files.add(multipartFile);
-  final response = await request.send();
+  final response = await request.send().timeout(Duration(seconds: 4));
   print(response.statusCode);
   return response.reasonPhrase;
-
-  // if (response.statusCode == 201) {
-  //   // If the server did return a 201 CREATED response,
-  //   // then parse the JSON.
-  //   return response.reasonPhrase;
-  // } else {
-  //   // If the server did not return a 201 CREATED response,
-  //   // then throw an exception.
-  //   throw Exception('Failed to create album.');
-  // }
 }
 
 extension StringExtension on String {

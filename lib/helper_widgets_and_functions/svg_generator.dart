@@ -17,11 +17,5 @@ final Widget metricReportsSVG = SvgPicture.asset(
 final String imagesIllustration = 'assets/home_screen_row2.svg';
 final Widget imagesSVG = SvgPicture.asset(
   imagesIllustration,
-  semanticsLabel: 'Metric Reports Illustration',
-);
-
-final String recentReportIllustration = 'assets/home_screen_row3.svg';
-final Widget recentSVG = SvgPicture.asset(
-  recentReportIllustration,
-  semanticsLabel: 'Metric Reports Illustration',
+  semanticsLabel: 'Images Illustration',
 );
