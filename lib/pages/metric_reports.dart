@@ -77,8 +77,9 @@ class _MetricReportsState extends State<MetricReports> {
             } else {
               final snackBar = SnackBar(
                 content: Text("Failed to fetch report!"),
+                duration: Duration(seconds: 2, milliseconds: 500),
                 action: SnackBarAction(
-                  label: 'Retry',
+                  label: 'Close',
                   onPressed: (){},
                 ),
               );

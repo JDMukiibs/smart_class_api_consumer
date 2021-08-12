@@ -145,7 +145,18 @@ class _HomeState extends State<Home> {
                             color: Colors.black,
                           ),
                         ),
-                        Expanded(child: (_studentReport.checkReportStatus()) ? recentSVG : buildChart()),
+                        SizedBox(height: 30),
+                        Expanded(
+                            child: (_studentReport.checkReportStatus())
+                                ? Text(
+                              "No recent report to show. Click Metric Report to fetch some data. Or, add some images and get a report",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            )
+                                : buildChart()
+                        ),
                       ],
                     ),
                   ),

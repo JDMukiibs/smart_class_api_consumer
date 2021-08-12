@@ -14,9 +14,6 @@ class SendImages extends StatefulWidget {
 }
 
 class _SendImagesState extends State<SendImages> {
-
-  late XFile imageFile;
-  late List <XFile?> images = [];
   List <XFile>? _imageFileList;
 
   set _imageFile(XFile? value) {
@@ -61,16 +58,6 @@ class _SendImagesState extends State<SendImages> {
     }
   }
 
-  void chooseImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
-
-    setState(() {
-      images.add(pickedFile);
-      imageFile = pickedFile!;
-      imagePaths.add(imageFile.path);
-    });
-  }
-
   // void _showAction(BuildContext context, int index) {
   //   showDialog<void>(
   //     context: context,
@@ -93,7 +80,7 @@ class _SendImagesState extends State<SendImages> {
     return GridView.builder(
       itemCount: images.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount: 4,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
@@ -158,102 +145,6 @@ class _SendImagesState extends State<SendImages> {
                 ),
             ),
           ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton.icon(
-                onPressed: () {
-                  chooseImage(ImageSource.gallery);
-                },
-                icon: Icon(
-                  Icons.upload_file,
-                  color: Colors.white,
-                ),
-                label: Text(
-                  'Add images',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 23,
-                    color: Colors.white,
-                  ),
-                ),
-                style: ButtonStyle(
-                    padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(5)),
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                          side: BorderSide(color: Colors.teal),
-                        )
-                    )
-                ),
-              ),
-              SizedBox(width: 20),
-              TextButton.icon(
-                onPressed: () async {
-                  if (images.length == 0){
-                    final snackBar = SnackBar(
-                      content: Text("No uploaded images!"),
-                      action: SnackBarAction(
-                        label: "Upload",
-                        onPressed: (){},
-                      ),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  } else {
-                    for (var image in images)
-                    {
-                      try
-                      {
-                        final uploadResult = await uploadImage(image);
-                        setState(() {
-                          print(uploadResult);
-                          //Navigator.pushReplacementNamed(context, '/reports', arguments: _futureAlbum);
-                        });
-                      }
-                      catch(e){
-                        print("Caught error: $e");
-                        final snackBar = SnackBar(
-                          content: Text("Failed to send images!"),
-                          action: SnackBarAction(
-                            label: 'Retry',
-                            onPressed: (){},
-                          ),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        break;
-                      }
-                    }
-                  }
-                },
-                icon: Icon(
-                  Icons.send,
-                  color: Colors.white,
-                ),
-                label: Text(
-                  'Send',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 23,
-                    color: Colors.white,
-                  ),
-                ),
-                style: ButtonStyle(
-                    padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(5)),
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                          side: BorderSide(color: Colors.teal),
-                        )
-                    )
-                ),
-              ),
-            ],
-          )
         ],
       ),
       floatingActionButton: ExpandableFab(
@@ -266,6 +157,71 @@ class _SendImagesState extends State<SendImages> {
           ActionButton(
             onPressed: () => _onImageButtonPressed(ImageSource.camera),
             icon: const Icon(Icons.add_a_photo),
+          ),
+          ActionButton(
+            onPressed: () async {
+              if (imagePaths.length == 0){
+                final snackBar = SnackBar(
+                  content: Text("Add some images first!"),
+                  duration: Duration(seconds: 2, milliseconds: 500),
+                  action: SnackBarAction(
+                    label: "Close",
+                    onPressed: (){},
+                  ),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              } else {
+                // Iterate through our images and upload each one and catch any errors that occur
+                var counter = 0;
+                for (var image in _imageFileList!)
+                {
+                  try
+                  {
+                    final uploadResult = await uploadImage(image);
+                    if (uploadResult == "CREATED") {
+                      setState(() {
+                        counter++;
+                        print(uploadResult);
+                        final snackBar = SnackBar(
+                          content: Text("$counter out of ${imagePaths.length} sent!"),
+                          duration: Duration(seconds: 3, milliseconds: 500),
+                          action: SnackBarAction(
+                            label: 'Close',
+                            onPressed: (){},
+                          ),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      });
+                    }else {
+                      final snackBar = SnackBar(
+                        content: Text("Response: $uploadResult"),
+                        duration: Duration(seconds: 4, milliseconds: 500),
+                        action: SnackBarAction(
+                          label: 'Close',
+                          onPressed: (){},
+                        ),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                  }
+                  catch(e){
+                    // Catch any other errors regarding other types of exceptions
+                    print("Caught error: $e");
+                    final snackBar = SnackBar(
+                      content: Text("Failed to send images!"),
+                      duration: Duration(seconds: 2, milliseconds: 500),
+                      action: SnackBarAction(
+                        label: 'Close',
+                        onPressed: (){},
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    break; // If we catch any errors during any point of upload we break out
+                  }
+                }
+              }
+            },
+            icon: const Icon(Icons.upload),
           )
         ],
       ),

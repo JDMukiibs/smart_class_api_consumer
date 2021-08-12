@@ -105,21 +105,12 @@ Future<String?> uploadImage(filename) async {
 
   var request = http.MultipartRequest('POST', uri);
   var multipartFile = new http.MultipartFile('picture', stream, length, filename: basename(filename.path));
+  print("Multipart file created.");
 
   request.files.add(multipartFile);
-  final response = await request.send();
+  final response = await request.send().timeout(Duration(seconds: 4));
   print(response.statusCode);
   return response.reasonPhrase;
-
-  // if (response.statusCode == 201) {
-  //   // If the server did return a 201 CREATED response,
-  //   // then parse the JSON.
-  //   return response.reasonPhrase;
-  // } else {
-  //   // If the server did not return a 201 CREATED response,
-  //   // then throw an exception.
-  //   throw Exception('Failed to create album.');
-  // }
 }
 
 extension StringExtension on String {
