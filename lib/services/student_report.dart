@@ -40,7 +40,7 @@ class StudentReport {
 
     try {
       // Make the request
-      http.Response response = await http.get(Uri.parse('http://10.0.2.2:5000/report')).timeout(const Duration(seconds: 3));
+      http.Response response = await http.get(Uri.parse('http://10.0.2.2:5000/report')).timeout(const Duration(seconds: 4));
       Map data = jsonDecode(response.body);
       print(data);
 
@@ -112,7 +112,7 @@ Future<String?> uploadImage(filename) async {
   print("Multipart file created.");
 
   request.files.add(multipartFile);
-  final response = await request.send().timeout(Duration(seconds: 4));
+  final response = await request.send().timeout(Duration(seconds: 50));
   print(response.statusCode);
   return response.reasonPhrase;
 }

@@ -179,7 +179,7 @@ class _SendImagesState extends State<SendImages> {
                         print(uploadResult);
                         final snackBar = SnackBar(
                           content: Text("$counter out of ${imagePaths.length} sent!"),
-                          duration: Duration(seconds: 3, milliseconds: 500),
+                          duration: Duration(seconds: 2),
                           action: SnackBarAction(
                             label: 'Close',
                             onPressed: (){},

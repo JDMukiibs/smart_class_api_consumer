@@ -65,7 +65,9 @@ class _HomeState extends State<Home> {
                   child: InkWell(
                     // When the container is tapped navigate to the Report screen
                     onTap: () {
-                      Navigator.pushNamed(context, '/reports');
+                      Navigator.pushNamed(context, '/reports').then((_){
+                        _loadStoredData();
+                      });
                     },
                     child: Container(
                       padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
@@ -97,7 +99,9 @@ class _HomeState extends State<Home> {
                   padding: const EdgeInsets.fromLTRB(20.0, 0, 20, 15),
                   child: InkWell(
                     onTap: () {
-                      Navigator.pushNamed(context, '/images');
+                      Navigator.pushNamed(context, '/images').then((_){
+                        _loadStoredData();
+                      });
                     },
                     child: Container(
                       padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
@@ -170,7 +174,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget buildChart() {
-    _loadStoredData();
+    // _loadStoredData();
     _chartData = createChartData(_studentReport);
     _testChartData = makeListOutOfData(_chartData);
 
