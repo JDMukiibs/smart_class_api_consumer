@@ -44,18 +44,22 @@ class StudentReport {
       Map data = jsonDecode(response.body);
       print(data);
 
-      // Get properties from data
-      double attScore = data['attentive'].toDouble();
-      double nAttScore = data['inattentive'].toDouble();
-      double slpScore = data['sleeping'].toDouble();
-      double total = attScore + nAttScore + slpScore;
-      print(total);
+      // Get properties from data only if status code returned is 201 otherwise take note of the error
+      if (response.statusCode == 201){
+        double attScore = data['attentive'].toDouble();
+        double nAttScore = data['inattentive'].toDouble();
+        double slpScore = data['sleeping'].toDouble();
+        double total = attScore + nAttScore + slpScore;
+        print(total);
 
-      // Perform necessary calculations and set our properties
-      attentiveScore = roundDouble(((attScore / total) * 100.0), 2);
-      inattentiveScore = roundDouble(((nAttScore / total) * 100.0), 2);
-      sleepingScore = roundDouble(((slpScore / total) * 100.0), 2);
-      error = ""; // Ensure error is returned to empty string so the if clause check passes when we try again
+        // Perform necessary calculations and set our properties
+        attentiveScore = roundDouble(((attScore / total) * 100.0), 2);
+        inattentiveScore = roundDouble(((nAttScore / total) * 100.0), 2);
+        sleepingScore = roundDouble(((slpScore / total) * 100.0), 2);
+        error = ""; // Ensure error is returned to empty string so the if clause check passes when we try again
+      }else{
+        error = data['error'];
+      }
     }
     on TimeoutException catch (e) {
       print("Caught error: $e");

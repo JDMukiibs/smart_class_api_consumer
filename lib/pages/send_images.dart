@@ -118,32 +118,27 @@ class _SendImagesState extends State<SendImages> {
       ),
       body: Column(
         children: <Widget>[
-          SizedBox(height: 10),
           Expanded(
-            child: Padding(
-              padding: EdgeInsets.all(15),
-              child: Container(
-                //padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.teal[100],
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-                child: imagePaths.length == 0
-                  ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'No images added yet!',
-                        style: TextStyle(
-                          fontSize: 30,
-                        ),
-                        textAlign: TextAlign.center,
-                      )
-                    ]
-                  )
-                    : imageTemplate(imagePaths)
-                ),
-            ),
+            child: Container(
+              //padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.teal[100],
+              ),
+              child: imagePaths.length == 0
+                ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'No images added yet!',
+                      style: TextStyle(
+                        fontSize: 30,
+                      ),
+                      textAlign: TextAlign.center,
+                    )
+                  ]
+                )
+                  : imageTemplate(imagePaths)
+              ),
           ),
         ],
       ),
