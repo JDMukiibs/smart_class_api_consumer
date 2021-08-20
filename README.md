@@ -13,7 +13,7 @@ First off, I made some designs using [Figma](https://www.figma.com/file/pB7TcjGz
 
 ## Running the app
 
-If you have Android Studio, it simply a matter of cloning the project and clicking play. In order to fully be able to test the uploading of images and creation of a report. You'll need to run the server whose code can be found in the aforementioned repository. In the readME of the repo, you'll also see that there is a link to the final model used.
+If you have Android Studio, it is simply a matter of cloning the project and clicking play. In order to fully be able to test the uploading of images and creation of a report. You'll need to run the server whose code can be found in the aforementioned repository. In the readME of the repo, you'll also see that there is a link to the final model used.
 
 ### Demo
 
