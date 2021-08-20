@@ -1,15 +1,15 @@
 # Smart Class
 
+The Smart Class application was a protoype project my supervisor tasked me with building as a possible solution to helping teachers during the pandemic have an alternative method to tracking student engagement during live synchronous online classes. 
+
+# Detailed information
+
 A Flutter app that will send images to an API, the API will classify the level of engagement of the student and save the result to a small Database.
 Later on, the API will provide the app with an endpoint to have a metric report of the engagement throughout the class.
 The API codes that the app communicates with can be found in this other [repository](https://github.com/KimRaicho/smartClassAPI) which was used to store the ML model code that generated the model that classified sent images. @KimRaicho developed and trained the ML model that was used for classification of images.
-The repo also houses the FLASK API and server code within the server folder.
+The repo also houses the FLASK API and server code within the server folder which I contributed to by writing the Flask API code and designing the simple database we were going to use.
 
-## Detailed information
-
-The Smart Class application was a protoype project my supervisor tasked me with building as a possible solution to helping teachers during the pandemic have an alternative method to tracking student engagement during live synchronous online classes. 
-
-First off, I made some designs using [Figma](https://www.figma.com/file/pB7TcjGzSjkruTI1cV6GVj/SmartClass-API-Consumer?node-id=13%3A576). 
+Moving back to the FE, before building the application I made some designs using [Figma](https://www.figma.com/file/pB7TcjGzSjkruTI1cV6GVj/SmartClass-API-Consumer?node-id=13%3A576). 
 
 ## Running the app
 
