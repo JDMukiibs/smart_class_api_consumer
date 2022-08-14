@@ -4,7 +4,6 @@ class CirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint();
-
     // Set color for Circle 1
     paint.color = Colors.teal[400] as Color;
     // Set center of circle 1 => (0, size.height)
@@ -39,7 +38,6 @@ class CirclePainter extends CustomPainter {
     center = Offset(size.width/2, size.height+74);
     // Draw Circle 2
     canvas.drawCircle(center, 100, paint);
-
   }
 
   @override

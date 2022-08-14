@@ -13,6 +13,14 @@ class EngagementData {
   EngagementData({required this.classification, required this.amount});
 }
 
+Map<dynamic, dynamic> createChartData(StudentReport studentData){
+  var details = new Map();
+  details['attentive'] = studentData.attentiveScore;
+  details['inattentive'] = studentData.inattentiveScore;
+  details['sleeping'] = studentData.sleepingScore;
+  return details;
+}
+
 List<EngagementData> makeListOutOfData(Map<dynamic, dynamic> report){
   final List<EngagementData> eData = [];
 
@@ -37,7 +45,6 @@ class StudentReport {
   }
 
   Future<void> getReport() async {
-
     try {
       // Make the request
       http.Response response = await http.get(Uri.parse('http://10.0.2.2:5000/report')).timeout(const Duration(seconds: 4));
@@ -69,7 +76,6 @@ class StudentReport {
       print("Caught error: $e");
       error = 'Server unresponsive';
     }
-
   }
 
   // This function helps us in the Home screen to determine if we were able to get any data from prefs
@@ -80,20 +86,11 @@ class StudentReport {
     else
       return false;
   }
-
 }
 
 double roundDouble(double value, int places){
   num mod = pow(10.0, places);
   return ((value * mod).round().toDouble() / mod);
-}
-
-Map<dynamic, dynamic> createChartData(StudentReport studentData){
-  var details = new Map();
-  details['attentive'] = studentData.attentiveScore;
-  details['inattentive'] = studentData.inattentiveScore;
-  details['sleeping'] = studentData.sleepingScore;
-  return details;
 }
 
 Future<String?> uploadImage(filename) async {

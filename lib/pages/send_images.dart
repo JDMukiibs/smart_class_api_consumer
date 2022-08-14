@@ -24,7 +24,6 @@ class _SendImagesState extends State<SendImages> {
 
   final ImagePicker _picker = ImagePicker();
   List <String> imagePaths = [];
-  //static const _actionTitles = ['Upload Photo(s)', 'Take a Photo'];
 
   void _onImageButtonPressed(ImageSource source, {bool isMultiImage = false}) async {
     if(isMultiImage) {
@@ -57,23 +56,6 @@ class _SendImagesState extends State<SendImages> {
       }
     }
   }
-
-  // void _showAction(BuildContext context, int index) {
-  //   showDialog<void>(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         content: Text(_actionTitles[index]),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () => Navigator.of(context).pop(),
-  //             child: const Text('CLOSE'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
 
   // Created my own grid building widget function to avoid overpopulating the main function with code.
   Widget imageTemplate(images) {
